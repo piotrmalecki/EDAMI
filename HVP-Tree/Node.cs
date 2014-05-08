@@ -9,6 +9,8 @@ namespace HVP_Tree {
         public int Id;
         public List<float> Coordinates;
 
+        public double StandardDeviation;
+
         public Point() { }
 
         public Point(int i, float[] p) {

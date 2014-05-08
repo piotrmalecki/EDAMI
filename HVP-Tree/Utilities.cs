@@ -64,8 +64,10 @@ namespace HVP_Tree {
         }
 
         public static double Median(this List<double> values) {
-            values.Sort();
-            double[] sorted = values.ToArray();
+            List<double> copy = values.Select(s => s).ToList();
+            
+            copy.Sort();
+            double[] sorted = copy.ToArray();
 
             int mid = values.Count / 2;
             double median = ( values.Count % 2 != 0 ) ? sorted[mid] : ( sorted[mid] + sorted[mid - 1] ) / 2;

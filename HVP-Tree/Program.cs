@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 namespace HVP_Tree {
     public class Program {
         static void Main(string[] args) {
+            bool ifRandom = false;
+            if( args.Length >= 1 && args[0] == "random") {
+                ifRandom = true;
+            }
             Tree tree = new Tree(Utilities.GetData("../../wookie.txt"));
-            tree.Build();
+            tree.Build(ifRandom);
 
-            Console.WriteLine(String.Format("Program calculated distance: {0} times", Counters.DistanceCalculations));
+            Console.WriteLine(String.Format("While building VP-tree program calculated distance: {0} times", Counters.DistanceCalculations));
+
+            Console.Write("Program commands:\n  kNearest k pointId\n  epsNB eps pointId\n\n");
 
             int count = Counters.DistanceCalculations;
             tree.SearchKNearest(tree.allPoints.Where(p => p.Id == 0).First(), 2);
@@ -19,8 +25,8 @@ namespace HVP_Tree {
             Console.WriteLine();
 
             count = Counters.DistanceCalculations;
-            tree.SearchEpsNB(tree.allPoints.Where(p => p.Id == 0).First(), 1.3);
-            Console.WriteLine(String.Format("Program calculated distance: {0} times\n\nType command: ", Counters.DistanceCalculations - count));
+            tree.SearchEpsNB(tree.allPoints.Where(p => p.Id == 0).First(), 1.5);
+            Console.WriteLine(String.Format("Program calculated distance: {0} times\n\nType command:", Counters.DistanceCalculations - count));
             
             string command;
             while( ( command = Console.ReadLine() ) != "exit" ) {
@@ -40,7 +46,7 @@ namespace HVP_Tree {
                     tree.SearchEpsNB(tree.allPoints.Where(p => p.Id == id).First(), eps);
                 }
 
-                Console.WriteLine(String.Format("Program calculated distance: {0} times\n\nxType command: ", Counters.DistanceCalculations - count));
+                Console.WriteLine(String.Format("Program calculated distance: {0} times\n\nxType command:", Counters.DistanceCalculations - count));
             }
 
             Console.ReadKey();

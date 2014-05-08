@@ -13,63 +13,94 @@ namespace HVP_Tree {
             allPoints = p;
         }
 
-        public void Build() {
-            root = RecursiveVPBuilder(allPoints.Select(i => i).ToList());
+        public void Build(bool ifRandom) {
+            if(!ifRandom)
+                CalculateStandardDeviation();
+
+            root = RecursiveVPBuilder(allPoints.Select(i => i).ToList(), ifRandom);
         }
 
-        private Node RecursiveVPBuilder(List<Point> points) {
+        private Node RecursiveVPBuilder(List<Point> points, bool ifRandom) {
             if( points.Count == 0 )
                 return null;
 
             Node node = new Node();
-            node.Point = ChooseVP(points);
+            
+            if(!ifRandom)
+                node.Point = ChooseVP(points);
+            else
+                node.Point = RandomChooseVP(points);
+            
             points.Remove(node.Point);
 
             if( points.Count == 0 )
                 return node;
 
-            node.Median = node.Point.Distances(points).Median();
-            Tuple<List<Point>, List<Point>> subtrees = GetSubtrees(points, node.Point, node.Median);
+            List<double> distances = node.Point.Distances(points);
+            node.Median = distances.Median();
+
+            Tuple<List<Point>, List<Point>> subtrees = GetSubtrees(points, distances, node.Point, node.Median);
             List<Point> leftPoints = subtrees.Item1;
             List<Point> rightPoints = subtrees.Item2;
 
-            node.LS = RecursiveVPBuilder(leftPoints);
-            node.RS = RecursiveVPBuilder(rightPoints);
+            node.LS = RecursiveVPBuilder(leftPoints, ifRandom);
+            node.RS = RecursiveVPBuilder(rightPoints, ifRandom);
 
             return node;
         }
 
         #region helpers
         // dumb version searching whole dataset
-        private Point ChooseVP(List<Point> points) {
-            Point vp = new Point();
-            double maxStandardDeviation = 0;
-
-            foreach( Point current in points ) {
-                List<double> distances = current.Distances(points);
-
-                if( points.Count <= 2 )
-                    return current;
-
-                double sd = distances.StandardDeviation();
-                if( sd >= maxStandardDeviation ) {
-                    maxStandardDeviation = sd;
-                    vp = current;
-                }
+        private void CalculateStandardDeviation() {
+            foreach( Point current in allPoints ) {
+                List<double> distances = current.Distances(allPoints);
+                current.StandardDeviation = distances.StandardDeviation();
             }
-
-            return vp;
         }
 
-        private Tuple<List<Point>, List<Point>> GetSubtrees(List<Point> points, Point vp, double median) {
+        private Point ChooseVP(List<Point> points) {
+            double max = points.Max(p => p.StandardDeviation);
+
+            return points.Where(p => p.StandardDeviation == max).First();
+        }
+
+        private Point RandomChooseVP(List<Point> points) {
+            Random rnd = new Random();
+            int index = rnd.Next(points.Count);
+
+            return points.ElementAt(index);
+        }
+
+        // old unoptimized version of choosing VP
+        //private Point ChooseVP(List<Point> points) {
+        //    Point vp = new Point();
+        //    double maxStandardDeviation = 0;
+
+        //    foreach( Point current in points ) {
+        //        List<double> distances = current.Distances(points);
+
+        //        if( points.Count <= 2 )
+        //            return current;
+
+        //        double sd = distances.StandardDeviation();
+        //        if( sd >= maxStandardDeviation ) {
+        //            maxStandardDeviation = sd;
+        //            vp = current;
+        //        }
+        //    }
+
+        //    return vp;
+        //}
+
+        private Tuple<List<Point>, List<Point>> GetSubtrees(List<Point> points, List<double> distances, Point vp, double median) {
             List<Point> L = new List<Point>();
             List<Point> R = new List<Point>();
 
-            foreach( Point p in points ) {
-                if( Utilities.Distance(vp, p) > median )
-                    R.Add(p);
+            for(int i = 0; i < points.Count; i++) {
+                if( distances.ElementAt(i) > median )
+                    R.Add(points.ElementAt(i));
                 else
-                    L.Add(p);
+                    L.Add(points.ElementAt(i));
             }
 
             return new Tuple<List<Point>,List<Point>>(L, R);
@@ -82,7 +113,7 @@ namespace HVP_Tree {
             List<NodeWithDistance> queue = new List<NodeWithDistance>();
             KNearest(root, target, k, ref queue, ref tau);
 
-            Console.WriteLine(String.Format("Searching for point: {0}. {1}x{2}", target.Id, target.Coordinates.ElementAt(0), target.Coordinates.ElementAt(1)));
+            Console.WriteLine(String.Format("Search KNearest for point: {0}. {1}x{2}, k={3}", target.Id, target.Coordinates.ElementAt(0), target.Coordinates.ElementAt(1), k));
             foreach( NodeWithDistance n in queue ) {
                 Console.WriteLine(String.Format("{0}. {1}", n.Point.Id, n.distance));
             }
@@ -132,7 +163,7 @@ namespace HVP_Tree {
             List<Node> queue = new List<Node>();
             EpsNB(root, target, ref queue, eps);
 
-            Console.WriteLine(String.Format("EPS Searching for point: {0}. {1}x{2}, eps={3}", target.Id, target.Coordinates.ElementAt(0), target.Coordinates.ElementAt(1), eps));
+            Console.WriteLine(String.Format("Search EpsNB for point: {0}. {1}x{2}, eps={3}", target.Id, target.Coordinates.ElementAt(0), target.Coordinates.ElementAt(1), eps));
             foreach( Node n in queue ) {
                 Console.WriteLine(String.Format("{0}. {1}x{2}", n.Point.Id, n.Point.Coordinates.ElementAt(0), n.Point.Coordinates.ElementAt(1)));
             }
