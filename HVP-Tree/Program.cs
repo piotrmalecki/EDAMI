@@ -11,7 +11,7 @@ namespace HVP_Tree {
             if( args.Length >= 1 && args[0] == "random") {
                 ifRandom = true;
             }
-            Tree tree = new Tree(Utilities.GetData("../../wookie.txt"));
+            Tree tree = new Tree(Utilities.GetData("../../sequoia-1200.txt"));
             tree.Build(ifRandom);
 
             Console.WriteLine(String.Format("While building VP-tree program calculated distance: {0} times", Counters.DistanceCalculations));
