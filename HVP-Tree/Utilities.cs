@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 namespace HVP_Tree {
     public class Utilities {
         public static double Distance(Point from, Point to) {
+            if( Tree.distanceMeteric == "manhattan" )
+                return ManhattanDistance(from, to);
+            else
+                return EuclideanDistance(from, to);
+        }
+
+        private static double EuclideanDistance(Point from, Point to) {
             if( from.Coordinates.Count != to.Coordinates.Count )
                 throw new Exception();
 
@@ -17,6 +24,19 @@ namespace HVP_Tree {
 
             Counters.DistanceCalculations++;
             return Math.Sqrt(result);
+        }
+
+        private static double ManhattanDistance(Point from, Point to) {
+            if( from.Coordinates.Count != to.Coordinates.Count )
+                throw new Exception();
+
+            double result = 0;
+            for( int i = 0; i < from.Coordinates.Count; i++ ) {
+                result += Math.Abs(to.Coordinates.ElementAt(i) - from.Coordinates.ElementAt(i));
+            }
+
+            Counters.DistanceCalculations++;
+            return result;
         }
 
         public static List<Point> GetData(string path) {
@@ -33,13 +53,40 @@ namespace HVP_Tree {
 
             return result;
         }
+
+        public static long GetTimestamp() {
+            return (long)( DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)) ).TotalMilliseconds;
+        }
     }
 
-
+    #region counters
     public class Counters {
         public static int DistanceCalculations = 0;
     }
 
+    public class TreeCounters {
+        public static List<int> PathsLength = new List<int>();
+        public static int Nodes = 0;
+        public static long Runtime = 0;
+        public static int DistanceCalculations = 0;
+    }
+
+    public class LeafCounters {
+        public static List<int> Points = new List<int>();
+    }
+
+    public class KNearestCounters {
+        public static int DistanceCalculations = 0;
+        public static int NodesVisited = 0;
+        public static long Runtime = 0;
+    }
+
+    public class EpsCounters {
+        public static int DistanceCalculations = 0;
+        public static int NodesVisited = 0;
+        public static long Runtime = 0;
+    }
+    #endregion
 
     public static class ListMathExtensions {
         public static double Mean(this List<double> values) {

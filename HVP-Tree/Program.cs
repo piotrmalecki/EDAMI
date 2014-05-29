@@ -6,13 +6,67 @@ using System.Threading.Tasks;
 
 namespace HVP_Tree {
     public class Program {
+        //Arguments:
+        //    - path to dataset
+        //    - r / d - choosing root point by random or max std deviation
+        //    - e / m - euclidean or manhattan distance metric
+        //    - 11 - id of target point
+        //    - eps - eps value
+        //    - k - k value for searching nearest nb
+
         static void Main(string[] args) {
-            bool ifRandom = false;
-            if( args.Length >= 1 && args[0] == "random") {
-                ifRandom = true;
-            }
+            //if( args.Length < 5 ) {
+            //    Console.WriteLine(String.Format("Wrong arguments!"));
+            //    Console.ReadKey();
+
+            //    return;
+            //}
+
+            //// get arguments
+            //bool ifRandom = args[0] == "r" ? true : false;
+            //Tree.distanceMeteric = args[1] == "m" ? "manhattan" : "euclidean";
+
+            //int id = Convert.ToInt32(args[2]);
+            //double eps = double.Parse(args[3]);
+            //int k = Convert.ToInt32(args[4]);
+
+            //// create tree
+            //Tree tree = new Tree(Utilities.GetData("../../sequoia-1200.txt"));
+            //tree.Build(ifRandom);
+            //Point target = tree.allPoints.First(p => p.Id == id);
+
+            //if( target != null ) {
+            //    // search k nearest
+            //    tree.SearchKNearest(tree.allPoints.First(p => p.Id == id), k);
+
+            //    // search eps nb
+            //    tree.SearchEpsNB(tree.allPoints.First(p => p.Id == id), eps);
+            //}
+
+            //Console.Write("Program commands:\n  kNearest k pointId\n  epsNB eps pointId\n  exit\n\n");
+            //string command;
+            //while( ( command = Console.ReadLine() ) != "exit" ) {
+            //    string[] arguments = command.Split(' ');
+
+            //    if( arguments[0] == "kNearest" ) {
+            //        Point point = tree.allPoints.First(p => p.Id == Convert.ToInt32(arguments[2]));
+
+            //        if( point != null )
+            //            tree.SearchKNearest(point, Convert.ToInt32(arguments[1]));
+            //    }
+            //    else if( arguments[0] == "epsNB" ) {
+            //        Point point = tree.allPoints.First(p => p.Id == Convert.ToInt32(arguments[2]));
+
+            //        if( point != null )
+            //            tree.SearchEpsNB(point, double.Parse(arguments[1]));
+            //    }
+            //}
+
+            //Console.ReadKey();
+
+            Tree.ifRandom = false;
             Tree tree = new Tree(Utilities.GetData("../../sequoia-1200.txt"));
-            tree.Build(ifRandom);
+            tree.Build();
 
             Console.WriteLine(String.Format("While building VP-tree program calculated distance: {0} times", Counters.DistanceCalculations));
 

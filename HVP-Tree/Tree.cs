@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace HVP_Tree {
     public class Tree {
+        public static string distanceMeteric = "euclidean";
+        public static bool ifRandom = false;
+
         public List<Point> allPoints;
         private Node root;
 
@@ -13,18 +16,28 @@ namespace HVP_Tree {
             allPoints = p;
         }
 
-        public void Build(bool ifRandom) {
-            if(!ifRandom)
+        public void Build() {
+            TreeCounters.Runtime = Utilities.GetTimestamp();
+            TreeCounters.DistanceCalculations = Counters.DistanceCalculations;
+
+            if( !ifRandom )
                 CalculateStandardDeviation();
 
-            root = RecursiveVPBuilder(allPoints.Select(i => i).ToList(), ifRandom);
+            int pathLength = 0;
+            root = RecursiveVPBuilder(allPoints.Select(i => i).ToList(), pathLength);
+            TreeCounters.Runtime = Utilities.GetTimestamp() - TreeCounters.Runtime;
+            TreeCounters.DistanceCalculations = Counters.DistanceCalculations - TreeCounters.DistanceCalculations;
+
+            Output.WriteToStats(Output.TreeResults());
         }
 
-        private Node RecursiveVPBuilder(List<Point> points, bool ifRandom) {
+        private Node RecursiveVPBuilder(List<Point> points, int pathLength) {
             if( points.Count == 0 )
                 return null;
 
             Node node = new Node();
+            TreeCounters.Nodes++;
+            pathLength++;
             
             if(!ifRandom)
                 node.Point = ChooseVP(points);
@@ -33,8 +46,11 @@ namespace HVP_Tree {
             
             points.Remove(node.Point);
 
-            if( points.Count == 0 )
+            if( points.Count == 0 ) {
+                TreeCounters.PathsLength.Add(pathLength);
+
                 return node;
+            }
 
             List<double> distances = node.Point.Distances(points);
             node.Median = distances.Median();
@@ -43,8 +59,8 @@ namespace HVP_Tree {
             List<Point> leftPoints = subtrees.Item1;
             List<Point> rightPoints = subtrees.Item2;
 
-            node.LS = RecursiveVPBuilder(leftPoints, ifRandom);
-            node.RS = RecursiveVPBuilder(rightPoints, ifRandom);
+            node.LS = RecursiveVPBuilder(leftPoints, pathLength);
+            node.RS = RecursiveVPBuilder(rightPoints, pathLength);
 
             return node;
         }
@@ -71,27 +87,6 @@ namespace HVP_Tree {
             return points.ElementAt(index);
         }
 
-        // old unoptimized version of choosing VP
-        //private Point ChooseVP(List<Point> points) {
-        //    Point vp = new Point();
-        //    double maxStandardDeviation = 0;
-
-        //    foreach( Point current in points ) {
-        //        List<double> distances = current.Distances(points);
-
-        //        if( points.Count <= 2 )
-        //            return current;
-
-        //        double sd = distances.StandardDeviation();
-        //        if( sd >= maxStandardDeviation ) {
-        //            maxStandardDeviation = sd;
-        //            vp = current;
-        //        }
-        //    }
-
-        //    return vp;
-        //}
-
         private Tuple<List<Point>, List<Point>> GetSubtrees(List<Point> points, List<double> distances, Point vp, double median) {
             List<Point> L = new List<Point>();
             List<Point> R = new List<Point>();
@@ -108,17 +103,20 @@ namespace HVP_Tree {
         #endregion
 
         #region search
-        public List<Node> SearchKNearest(Point target, int k) {
+        public void SearchKNearest(Point target, int k) {
             double tau = double.PositiveInfinity;
             List<NodeWithDistance> queue = new List<NodeWithDistance>();
+
+            KNearestCounters.DistanceCalculations = Counters.DistanceCalculations;
+            KNearestCounters.Runtime = Utilities.GetTimestamp();
+
             KNearest(root, target, k, ref queue, ref tau);
 
-            Console.WriteLine(String.Format("Search KNearest for point: {0}. {1}x{2}, k={3}", target.Id, target.Coordinates.ElementAt(0), target.Coordinates.ElementAt(1), k));
-            foreach( NodeWithDistance n in queue ) {
-                Console.WriteLine(String.Format("{0}. {1}", n.Point.Id, n.distance));
-            }
+            KNearestCounters.Runtime = Utilities.GetTimestamp() - KNearestCounters.Runtime;
+            KNearestCounters.DistanceCalculations = Counters.DistanceCalculations - KNearestCounters.DistanceCalculations;
 
-            return null;
+            Output.WriteToStats(Output.KNearestStats(target, k));
+            Output.WriteToResults(Output.KNearestResults(target, queue, k, tau));
         }
 
         private void KNearest(Node node, Point target, int k, ref List<NodeWithDistance> queue, ref double tau) {
@@ -126,6 +124,7 @@ namespace HVP_Tree {
                 return;
 
             double distance = Utilities.Distance(node.Point, target);
+            KNearestCounters.NodesVisited++;
 
             if( distance < tau && node.Point.Id != target.Id) {
                 if( queue.Count == k ) {
@@ -159,25 +158,30 @@ namespace HVP_Tree {
             }
         }
 
-        public List<Node> SearchEpsNB(Point target, double eps) {
-            List<Node> queue = new List<Node>();
+        public void SearchEpsNB(Point target, double eps) {
+            List<NodeWithDistance> queue = new List<NodeWithDistance>();
+
+            EpsCounters.DistanceCalculations = Counters.DistanceCalculations;
+            EpsCounters.Runtime = Utilities.GetTimestamp();
+
             EpsNB(root, target, ref queue, eps);
 
-            Console.WriteLine(String.Format("Search EpsNB for point: {0}. {1}x{2}, eps={3}", target.Id, target.Coordinates.ElementAt(0), target.Coordinates.ElementAt(1), eps));
-            foreach( Node n in queue ) {
-                Console.WriteLine(String.Format("{0}. {1}x{2}", n.Point.Id, n.Point.Coordinates.ElementAt(0), n.Point.Coordinates.ElementAt(1)));
-            }
+            EpsCounters.Runtime = Utilities.GetTimestamp() - EpsCounters.Runtime;
+            EpsCounters.DistanceCalculations = Counters.DistanceCalculations - EpsCounters.DistanceCalculations;
 
-            return null;
+            Output.WriteToStats(Output.EPSNbStats(target, queue.Count, eps));
+            Output.WriteToResults(Output.EpsNBResults(target, queue, eps));
         }
 
-        public void EpsNB(Node node, Point target, ref List<Node> queue, double eps) {
+        public void EpsNB(Node node, Point target, ref List<NodeWithDistance> queue, double eps) {
             if( node == null )
                 return;
 
             double distance = Utilities.Distance(node.Point, target);
+            EpsCounters.NodesVisited++;
+
             if( distance <= eps && node.Point.Id != target.Id ) {
-                queue.Add(node);
+                queue.Add(new NodeWithDistance(new Node() { Point = node.Point }, distance));
             }
 
             if( node.LS == null && node.RS == null ) {
