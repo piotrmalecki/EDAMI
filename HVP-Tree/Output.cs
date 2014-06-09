@@ -41,7 +41,7 @@ namespace HVP_Tree {
 
             sb.AppendLine("- found points (id and distance to target):");
             foreach( NodeWithDistance n in found ) {
-                sb.AppendFormat("  - {0}. {1}\n", n.Point.Id, Math.Round(n.distance)).AppendLine();
+                sb.AppendFormat("  - {0}. {1}\n", n.Point.Id, Math.Round(n.distance, 2)).AppendLine();
             }
             sb.AppendLine();
 
@@ -69,11 +69,11 @@ namespace HVP_Tree {
             StringBuilder sb = new StringBuilder("Eps-neighborhood search:", 500);
             sb.AppendFormat("- eps = {0}{1}", eps, Environment.NewLine);
             sb.AppendFormat("- target point id = {0}{1}", target.Id, Environment.NewLine);
-            sb.AppendFormat("- target point coords = {0}x{1}{2}", target.Coordinates.ElementAt(0), target.Coordinates.ElementAt(1), Environment.NewLine);
+            sb.AppendFormat("- target point coords = {0}x{1}{2}", target.Coordinates.ElementAt(0), target.Coordinates.Count, Environment.NewLine);
 
             sb.AppendLine("- found points (id and distance to target):");
             foreach( NodeWithDistance n in found ) {
-                sb.AppendFormat("  - {0}. {1}{2}", n.Point.Id, Math.Round(n.distance), Environment.NewLine);
+                sb.AppendFormat("  - {0}. {1}{2}", n.Point.Id, Math.Round(n.distance, 2), Environment.NewLine);
             }
             sb.AppendLine();
 

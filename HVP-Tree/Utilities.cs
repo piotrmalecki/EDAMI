@@ -45,7 +45,7 @@ namespace HVP_Tree {
 
             foreach( string line in lines ) {
                 List<float> coords = new List<float>();
-                string[] coordinates = line.Split(':');
+                string[] coordinates = line.Split(' ');
 
                 foreach( string coord in coordinates ) {
                     coords.Add(float.Parse(coord));

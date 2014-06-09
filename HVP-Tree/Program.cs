@@ -23,7 +23,7 @@ namespace HVP_Tree {
             }
 
             // get arguments
-            bool ifRandom = args[1] == "r" ? true : false;
+            Tree.ifRandom = args[1] == "r" ? true : false;
             Tree.distanceMeteric = args[2] == "m" ? "manhattan" : "euclidean";
 
             int id = Convert.ToInt32(args[3]);
