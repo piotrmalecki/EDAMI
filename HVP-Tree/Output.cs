@@ -99,21 +99,25 @@ namespace HVP_Tree {
             StringBuilder sb = new StringBuilder("", 1000);
             sb.AppendLine("K-Nearest stats:");
             sb.AppendFormat("- k = {0}\n", k).AppendLine();
+            sb.AppendFormat("- number of searches = {0}\n", AllKNearestCounters.DistanceCalculations.Count).AppendLine();
+            sb.AppendFormat("- total distance calculations = {0}\n", AllKNearestCounters.DistanceCalculations.Sum()).AppendLine();
+            sb.AppendFormat("- total nodes visited = {0}\n", AllKNearestCounters.NodesVisited.Sum()).AppendLine();
+            sb.AppendFormat("- total runtime = {0}\n", AllKNearestCounters.Runtime.Sum()).AppendLine().AppendLine();
 
             sb.AppendFormat("- min. distance calculations = {0}\n\n", AllKNearestCounters.DistanceCalculations.Min()).AppendLine();
             sb.AppendFormat("- max. distance calculations = {0}\n\n", AllKNearestCounters.DistanceCalculations.Max()).AppendLine();
             sb.AppendFormat("- avg. distance calculations = {0}\n\n", AllKNearestCounters.DistanceCalculations.Average()).AppendLine();
-            sb.AppendFormat("- std. deviation distance calculations = {0}\n\n", AllKNearestCounters.DistanceCalculations.StandardDeviation()).AppendLine();
+            sb.AppendFormat("- std. deviation distance calculations = {0}\n\n", AllKNearestCounters.DistanceCalculations.StandardDeviation()).AppendLine().AppendLine();
 
             sb.AppendFormat("- min. nodes visited = {0}\n", AllKNearestCounters.NodesVisited.Min()).AppendLine();
             sb.AppendFormat("- max. nodes visited = {0}\n", AllKNearestCounters.NodesVisited.Max()).AppendLine();
             sb.AppendFormat("- avg. nodes visited = {0}\n", AllKNearestCounters.NodesVisited.Average()).AppendLine();
-            sb.AppendFormat("- std. deviation nodes visited = {0}\n", AllKNearestCounters.NodesVisited.StandardDeviation()).AppendLine();
+            sb.AppendFormat("- std. deviation nodes visited = {0}\n", AllKNearestCounters.NodesVisited.StandardDeviation()).AppendLine().AppendLine();
 
             sb.AppendFormat("- min. runtime = {0}\n", AllKNearestCounters.Runtime.Min()).AppendLine();
             sb.AppendFormat("- max. runtime = {0}\n", AllKNearestCounters.Runtime.Max()).AppendLine();
             sb.AppendFormat("- avg. runtime = {0}\n", AllKNearestCounters.Runtime.Average()).AppendLine();
-            sb.AppendFormat("- std. deviation runtime = {0}\n", AllKNearestCounters.Runtime).AppendLine();
+            sb.AppendFormat("- std. deviation runtime = {0}\n", AllKNearestCounters.Runtime.Select(s => (int)s).ToList().StandardDeviation()).AppendLine().AppendLine();
             sb.AppendLine();
 
             WriteToStats(sb.ToString());
@@ -123,21 +127,25 @@ namespace HVP_Tree {
             StringBuilder sb = new StringBuilder("", 1000);
             sb.AppendLine("Eps-neighborhood search stats:");
             sb.AppendFormat("- eps = {0}\n", eps).AppendLine();
+            sb.AppendFormat("- number of searches = {0}\n", AllEpsCounters.DistanceCalculations.Count).AppendLine();
+            sb.AppendFormat("- total distance calculations = {0}\n", AllEpsCounters.DistanceCalculations.Sum()).AppendLine();
+            sb.AppendFormat("- total nodes visited = {0}\n", AllEpsCounters.NodesVisited.Sum()).AppendLine();
+            sb.AppendFormat("- total runtime = {0}\n", AllEpsCounters.Runtime.Sum()).AppendLine().AppendLine();
 
             sb.AppendFormat("- min. distance calculations = {0}\n\n", AllEpsCounters.DistanceCalculations.Min()).AppendLine();
             sb.AppendFormat("- max. distance calculations = {0}\n\n", AllEpsCounters.DistanceCalculations.Max()).AppendLine();
             sb.AppendFormat("- avg. distance calculations = {0}\n\n", AllEpsCounters.DistanceCalculations.Average()).AppendLine();
-            sb.AppendFormat("- std. deviation distance calculations = {0}\n\n", AllEpsCounters.DistanceCalculations.StandardDeviation()).AppendLine();
+            sb.AppendFormat("- std. deviation distance calculations = {0}\n\n", AllEpsCounters.DistanceCalculations.StandardDeviation()).AppendLine().AppendLine();
 
             sb.AppendFormat("- min. nodes visited = {0}\n", AllEpsCounters.NodesVisited.Min()).AppendLine();
             sb.AppendFormat("- max. nodes visited = {0}\n", AllEpsCounters.NodesVisited.Max()).AppendLine();
             sb.AppendFormat("- avg. nodes visited = {0}\n", AllEpsCounters.NodesVisited.Average()).AppendLine();
-            sb.AppendFormat("- std. deviation nodes visited = {0}\n", AllEpsCounters.NodesVisited.StandardDeviation()).AppendLine();
+            sb.AppendFormat("- std. deviation nodes visited = {0}\n", AllEpsCounters.NodesVisited.StandardDeviation()).AppendLine().AppendLine();
 
             sb.AppendFormat("- min. runtime = {0}\n", AllEpsCounters.Runtime.Min()).AppendLine();
             sb.AppendFormat("- max. runtime = {0}\n", AllEpsCounters.Runtime.Max()).AppendLine();
             sb.AppendFormat("- avg. runtime = {0}\n", AllEpsCounters.Runtime.Average()).AppendLine();
-            sb.AppendFormat("- std. deviation runtime = {0}\n", AllEpsCounters.Runtime).AppendLine();
+            sb.AppendFormat("- std. deviation runtime = {0}\n", AllEpsCounters.Runtime.Select(s => (int)s).ToList().StandardDeviation()).AppendLine().AppendLine();
             sb.AppendLine();
 
             WriteToStats(sb.ToString());
