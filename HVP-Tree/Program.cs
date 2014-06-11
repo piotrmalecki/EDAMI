@@ -92,8 +92,6 @@ namespace HVP_Tree {
                         tree.SearchEpsNB(point, double.Parse(arguments[1]), true);
                 }
             }
-
-            Console.ReadKey();
         }
     }
 }

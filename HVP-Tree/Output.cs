@@ -24,7 +24,7 @@ namespace HVP_Tree {
             sb.AppendFormat("- max path length = {0}{1}", TreeCounters.PathsLength.Max(), Environment.NewLine);
             sb.AppendFormat("- min path length = {0}{1}", TreeCounters.PathsLength.Min(), Environment.NewLine);
             sb.AppendFormat("- avg path length = {0}{1}\n", TreeCounters.PathsLength.Average(), Environment.NewLine);
-            sb.AppendFormat("- avg path length = {0}{1}\n", TreeCounters.PathsLength.StandardDeviation(), Environment.NewLine);
+            sb.AppendFormat("- std. deviation path length = {0}{1}\n", TreeCounters.PathsLength.StandardDeviation(), Environment.NewLine);
             sb.AppendLine();
 
             return sb.ToString();
