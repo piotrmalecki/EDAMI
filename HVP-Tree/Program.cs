@@ -10,11 +10,13 @@ namespace HVP_Tree {
         //    - path to dataset
         //    - r / d - choosing root point by random or max std deviation
         //    - e / m - euclidean or manhattan distance metric
-        //    - 0 - id of target point
         //    - eps - eps value
         //    - k - k value for searching nearest nb
+        //    - all / eps / k - what we want to calculate
+        //    - 0 - id of target point
 
         static void Main(string[] args) {
+            bool calcAll = false;
             if( args.Length < 6 ) {
                 Console.WriteLine(String.Format("Wrong arguments!"));
                 Console.ReadKey();
@@ -22,25 +24,54 @@ namespace HVP_Tree {
                 return;
             }
 
+            if( args.Length == 6 )
+                calcAll = true;
+
             // get arguments
             Tree.ifRandom = args[1] == "r" ? true : false;
             Tree.distanceMeteric = args[2] == "m" ? "manhattan" : "euclidean";
 
-            int id = Convert.ToInt32(args[3]);
-            double eps = double.Parse(args[4]);
-            int k = Convert.ToInt32(args[5]);
+            double eps = double.Parse(args[3]);
+            int k = Convert.ToInt32(args[4]);
+            string mode = args[5];
 
             // create tree
             Tree tree = new Tree(Utilities.GetData(args[0]));
             tree.Build();
-            Point target = tree.allPoints.First(p => p.Id == id);
 
-            if( target != null ) {
+            if( calcAll ) {
+                foreach( Point p in tree.allPoints ) {
+                    if( mode == "all" ) {
+                        tree.SearchKNearest(p, k, false);
+                        tree.SearchEpsNB(p, eps, false);
+                    }
+                    else if( mode == "eps" ) {
+                        tree.SearchEpsNB(p, eps, false);
+                    }
+                    else if( mode == "k" ) {
+                        tree.SearchKNearest(p, k, false);
+                    }
+                }
+
+                if( mode == "all" ) {
+                    Output.AllStatsEpsNB(eps);
+                    Output.AllStatsKNearest(k);
+                }
+                else if( mode == "eps" ) {
+                    Output.AllStatsEpsNB(eps);
+                }
+                else if( mode == "k" ) {
+                    Output.AllStatsKNearest(k);
+                }
+            }
+            else {
+                int id = Convert.ToInt32(args[6]);
+
                 // search k nearest
-                tree.SearchKNearest(tree.allPoints.First(p => p.Id == id), k);
+                tree.SearchKNearest(tree.allPoints.First(p => p.Id == id), k, true);
 
                 // search eps nb
-                tree.SearchEpsNB(tree.allPoints.First(p => p.Id == id), eps);
+                tree.SearchEpsNB(tree.allPoints.First(p => p.Id == id), eps, true);
             }
 
             Console.Write("Program commands:\n  kNearest k pointId\n  epsNB eps pointId\n  exit\n\n");
@@ -52,13 +83,13 @@ namespace HVP_Tree {
                     Point point = tree.allPoints.First(p => p.Id == Convert.ToInt32(arguments[2]));
 
                     if( point != null )
-                        tree.SearchKNearest(point, Convert.ToInt32(arguments[1]));
+                        tree.SearchKNearest(point, Convert.ToInt32(arguments[1]), true);
                 }
                 else if( arguments[0] == "epsNB" ) {
                     Point point = tree.allPoints.First(p => p.Id == Convert.ToInt32(arguments[2]));
 
                     if( point != null )
-                        tree.SearchEpsNB(point, double.Parse(arguments[1]));
+                        tree.SearchEpsNB(point, double.Parse(arguments[1]), true);
                 }
             }
 
@@ -66,44 +97,3 @@ namespace HVP_Tree {
         }
     }
 }
-
-//Tree.ifRandom = false;
-//            Tree tree = new Tree(Utilities.GetData("../../sequoia-1200.txt"));
-//            tree.Build();
-
-//            Console.WriteLine(String.Format("While building VP-tree program calculated distance: {0} times", Counters.DistanceCalculations));
-
-//            Console.Write("Program commands:\n  kNearest k pointId\n  epsNB eps pointId\n\n");
-
-//            int count = Counters.DistanceCalculations;
-//            tree.SearchKNearest(tree.allPoints.Where(p => p.Id == 0).First(), 2);
-//            Console.WriteLine(String.Format("Program calculated distance: {0} times", Counters.DistanceCalculations - count));
-
-//            Console.WriteLine();
-
-//            count = Counters.DistanceCalculations;
-//            tree.SearchEpsNB(tree.allPoints.Where(p => p.Id == 0).First(), 1.5);
-//            Console.WriteLine(String.Format("Program calculated distance: {0} times\n\nType command:", Counters.DistanceCalculations - count));
-            
-//            string command;
-//            while( ( command = Console.ReadLine() ) != "exit" ) {
-//                count = Counters.DistanceCalculations;
-//                string[] arguments = command.Split(' ');
-
-//                if( arguments[0] == "kNearest" ) {
-//                    int k = Convert.ToInt32(arguments[1]);
-//                    int id = Convert.ToInt32(arguments[2]);
-
-//                    tree.SearchKNearest(tree.allPoints.Where(p => p.Id == id).First(), k);
-//                }
-//                else if( arguments[0] == "epsNB" ) {
-//                    double eps = double.Parse(arguments[1]);
-//                    int id = Convert.ToInt32(arguments[2]);
-
-//                    tree.SearchEpsNB(tree.allPoints.Where(p => p.Id == id).First(), eps);
-//                }
-
-//                Console.WriteLine(String.Format("Program calculated distance: {0} times\n\nxType command:", Counters.DistanceCalculations - count));
-//            }
-
-//            Console.ReadKey();

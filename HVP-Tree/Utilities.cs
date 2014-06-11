@@ -64,30 +64,50 @@ namespace HVP_Tree {
 
     #region counters
     public class Counters {
-        public static int DistanceCalculations = 0;
+        public static long DistanceCalculations = 0;
     }
 
     public class TreeCounters {
         public static List<int> PathsLength = new List<int>();
         public static int Nodes = 0;
         public static long Runtime = 0;
-        public static int DistanceCalculations = 0;
-    }
-
-    public class LeafCounters {
-        public static List<int> Points = new List<int>();
+        public static long DistanceCalculations = 0;
     }
 
     public class KNearestCounters {
-        public static int DistanceCalculations = 0;
+        public static long DistanceCalculations = 0;
         public static int NodesVisited = 0;
         public static long Runtime = 0;
+
+        public static void Reset() {
+            DistanceCalculations = 0;
+            NodesVisited = 0;
+            Runtime = 0;
+        }
     }
 
     public class EpsCounters {
-        public static int DistanceCalculations = 0;
+        public static long DistanceCalculations = 0;
         public static int NodesVisited = 0;
         public static long Runtime = 0;
+
+        public static void Reset() {
+            DistanceCalculations = 0;
+            NodesVisited = 0;
+            Runtime = 0;
+        }
+    }
+
+    public class AllKNearestCounters {
+        public static List<int> DistanceCalculations = new List<int>();
+        public static List<int> NodesVisited = new List<int>();
+        public static List<long> Runtime = new List<long>();
+    }
+
+    public class AllEpsCounters {
+        public static List<int> DistanceCalculations = new List<int>();
+        public static List<int> NodesVisited = new List<int>();
+        public static List<long> Runtime = new List<long>();
     }
     #endregion
 
@@ -118,6 +138,39 @@ namespace HVP_Tree {
             
             copy.Sort();
             double[] sorted = copy.ToArray();
+
+            int mid = values.Count / 2;
+            double median = ( values.Count % 2 != 0 ) ? sorted[mid] : ( sorted[mid] + sorted[mid - 1] ) / 2;
+
+            return median;
+        }
+
+        public static double Mean(this List<int> values) {
+            return values.Sum() / values.Count;
+        }
+
+        public static double Variance(this List<int> values) {
+            double variance = 0;
+            double mean = values.Mean();
+
+            for( int i = 0; i < values.Count; i++ ) {
+                variance += Math.Pow(( values[i] - mean ), 2);
+            }
+
+            return variance / ( values.Count - 1 );
+        }
+
+        public static double StandardDeviation(this List<int> values) {
+            double variance = values.Variance();
+
+            return Math.Sqrt(variance);
+        }
+
+        public static double Median(this List<int> values) {
+            List<int> copy = values.Select(s => s).ToList();
+
+            copy.Sort();
+            int[] sorted = copy.ToArray();
 
             int mid = values.Count / 2;
             double median = ( values.Count % 2 != 0 ) ? sorted[mid] : ( sorted[mid] + sorted[mid - 1] ) / 2;

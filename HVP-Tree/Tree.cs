@@ -103,7 +103,7 @@ namespace HVP_Tree {
         #endregion
 
         #region search
-        public void SearchKNearest(Point target, int k) {
+        public void SearchKNearest(Point target, int k, bool print) {
             double tau = double.PositiveInfinity;
             List<NodeWithDistance> queue = new List<NodeWithDistance>();
 
@@ -115,8 +115,16 @@ namespace HVP_Tree {
             KNearestCounters.Runtime = Utilities.GetTimestamp() - KNearestCounters.Runtime;
             KNearestCounters.DistanceCalculations = Counters.DistanceCalculations - KNearestCounters.DistanceCalculations;
 
-            Output.WriteToStats(Output.KNearestStats(target, k));
-            Output.WriteToResults(Output.KNearestResults(target, queue, k, tau));
+            if( print ) {
+                Output.WriteToStats(Output.KNearestStats(target, k));
+                Output.WriteToResults(Output.KNearestResults(target, queue, k, tau));
+            }
+
+            AllKNearestCounters.DistanceCalculations.Add((int)KNearestCounters.DistanceCalculations);
+            AllKNearestCounters.NodesVisited.Add(KNearestCounters.NodesVisited);
+            AllKNearestCounters.Runtime.Add(KNearestCounters.Runtime);
+
+            KNearestCounters.Reset();
         }
 
         private void KNearest(Node node, Point target, int k, ref List<NodeWithDistance> queue, ref double tau) {
@@ -158,7 +166,7 @@ namespace HVP_Tree {
             }
         }
 
-        public void SearchEpsNB(Point target, double eps) {
+        public void SearchEpsNB(Point target, double eps, bool print) {
             List<NodeWithDistance> queue = new List<NodeWithDistance>();
 
             EpsCounters.DistanceCalculations = Counters.DistanceCalculations;
@@ -169,8 +177,16 @@ namespace HVP_Tree {
             EpsCounters.Runtime = Utilities.GetTimestamp() - EpsCounters.Runtime;
             EpsCounters.DistanceCalculations = Counters.DistanceCalculations - EpsCounters.DistanceCalculations;
 
-            Output.WriteToStats(Output.EPSNbStats(target, queue.Count, eps));
-            Output.WriteToResults(Output.EpsNBResults(target, queue, eps));
+            if( print ) {
+                Output.WriteToStats(Output.EPSNbStats(target, queue.Count, eps));
+                Output.WriteToResults(Output.EpsNBResults(target, queue, eps));
+            }
+
+            AllEpsCounters.DistanceCalculations.Add((int)EpsCounters.DistanceCalculations);
+            AllEpsCounters.NodesVisited.Add(EpsCounters.NodesVisited);
+            AllEpsCounters.Runtime.Add(EpsCounters.Runtime);
+
+            EpsCounters.Reset();
         }
 
         public void EpsNB(Node node, Point target, ref List<NodeWithDistance> queue, double eps) {
